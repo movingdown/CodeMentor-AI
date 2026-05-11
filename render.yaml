@@ -1,0 +1,36 @@
+# Render Infrastructure-as-Code 설정.
+# Render 대시보드에서 "New + Blueprint" 로 이 파일을 가리키면 자동으로 서비스가 생성됩니다.
+# 수동 대시보드 설정으로도 동일하게 구성할 수 있습니다 (README 배포 섹션 참고).
+
+services:
+  - type: web
+    name: codementor-ai
+    runtime: python
+    rootDir: backend
+    plan: free
+    region: singapore
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 app:app
+    healthCheckPath: /api/health
+    envVars:
+      # 🔐 secret — Render 대시보드에서 직접 입력 (커밋되지 않음)
+      - key: GEMINI_API_KEY
+        sync: false
+
+      # 일반 설정
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: FLASK_DEBUG
+        value: "0"
+      - key: MAX_CODE_LENGTH
+        value: "20000"
+      - key: RATE_LIMIT
+        value: "5 per minute;30 per hour"
+
+      # ⚠️ 배포 후 본인 도메인으로 제한하세요
+      - key: ALLOWED_ORIGINS
+        value: "*"
+
+      # Python 버전 고정
+      - key: PYTHON_VERSION
+        value: "3.11.0"

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeMentor AI · AI 코드 리뷰어</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+  />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">&lt;/&gt;</span>
+      <span class="brand-name">CodeMentor<span class="brand-accent">AI</span></span>
+      <span class="brand-badge">v0.1.0</span>
+    </div>
+    <nav class="topbar-nav">
+      <span class="status-pill" title="Gemini API 연결 상태">
+        <span class="status-dot"></span>
+        <span>Gemini Connected</span>
+      </span>
+    </nav>
+  </header>
+
+  <main class="workspace">
+    <!-- Left: Input -->
+    <section class="pane pane-input">
+      <div class="pane-header">
+        <div class="window-dots">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+        </div>
+        <div class="pane-title" id="editorTitle">snippet.py</div>
+        <div class="pane-actions">
+          <button id="exampleBtn" class="pane-btn" title="현재 선택된 언어의 예제 코드를 삽입합니다">
+            📝 Python 예제
+          </button>
+          <span class="chars" id="charCount">0 / 20,000</span>
+        </div>
+      </div>
+
+      <div class="editor-wrap">
+        <textarea
+          id="code"
+          spellcheck="false"
+          placeholder="여기에 분석할 코드를 붙여넣으세요...&#10;&#10;💡 처음이라면 우측 상단의 '📝 예제' 버튼을 눌러 샘플 코드를 불러올 수 있어요.&#10;⌨️ Ctrl + Enter 로 분석 실행"
+        ></textarea>
+      </div>
+
+      <div id="inputWarning" class="input-warning hidden">
+        <span class="input-warning-icon" id="warningIcon">⚠️</span>
+        <span class="input-warning-text" id="warningText"></span>
+        <button class="input-warning-close" id="warningCloseBtn" aria-label="경고 닫기">×</button>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <span class="toolbar-label">언어</span>
+          <div class="pill-group" id="languageGroup" role="tablist">
+            <button class="pill" data-language="python" data-active="true">🐍 Python</button>
+            <button class="pill" data-language="java">☕ Java</button>
+            <button class="pill" data-language="javascript">🟨 JavaScript</button>
+          </div>
+        </div>
+
+        <div class="toolbar-group">
+          <span class="toolbar-label">분석 유형</span>
+          <div class="pill-group pill-group-grid" id="analysisGroup" role="tablist">
+            <button class="pill pill-lg" data-analysis="code_review" data-active="true">
+              <span class="pill-icon">📋</span>
+              <span class="pill-text"><b>코드 리뷰</b><em>가독성 · 구조</em></span>
+            </button>
+            <button class="pill pill-lg" data-analysis="bug_fix">
+              <span class="pill-icon">🐛</span>
+              <span class="pill-text"><b>버그 수정</b><em>버그 탐지 + 수정</em></span>
+            </button>
+            <button class="pill pill-lg" data-analysis="refactoring">
+              <span class="pill-icon">🔧</span>
+              <span class="pill-text"><b>리팩토링</b><em>구조 개선</em></span>
+            </button>
+            <button class="pill pill-lg" data-analysis="performance">
+              <span class="pill-icon">⚡</span>
+              <span class="pill-text"><b>성능 개선</b><em>최적화</em></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="toolbar-actions">
+          <button id="clearBtn" class="btn btn-ghost">초기화</button>
+          <button id="analyzeBtn" class="btn btn-primary">
+            <span class="btn-icon">▶</span>
+            <span>분석하기</span>
+            <kbd>Ctrl+↵</kbd>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: Result -->
+    <section class="pane pane-result">
+      <div class="pane-header">
+        <div class="window-dots">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+        </div>
+        <div class="pane-title">analysis-result.json</div>
+        <div class="pane-actions">
+          <span class="model-badge hidden" id="modelBadge"></span>
+        </div>
+      </div>
+
+      <div class="result-wrap">
+        <!-- Empty state -->
+        <div id="placeholder" class="state-empty">
+          <div class="state-icon">🤖</div>
+          <h3>아직 분석 결과가 없어요</h3>
+          <p>왼쪽 패널에서 코드를 입력하고 <b>분석하기</b>를 눌러주세요.<br/>
+            AI가 6가지 관점(요약·문제점·개선·수정 코드·성능·학습)으로 코드를 분석합니다.</p>
+          <div class="state-features">
+            <div class="state-feature">📋 <span>코드 리뷰</span></div>
+            <div class="state-feature">🐛 <span>버그 수정</span></div>
+            <div class="state-feature">🔧 <span>리팩토링</span></div>
+            <div class="state-feature">⚡ <span>성능 개선</span></div>
+          </div>
+          <div class="state-hint">
+            <span>💡 Tip:</span> 처음이라면 <b>📝 예제</b> 버튼으로 샘플을 불러오고
+            <kbd>Ctrl</kbd> + <kbd>Enter</kbd> 로 분석해 보세요.
+          </div>
+        </div>
+
+        <!-- Loading state -->
+        <div id="loadingState" class="state-loading hidden">
+          <div class="spinner" aria-hidden="true">
+            <svg viewBox="0 0 50 50">
+              <circle cx="25" cy="25" r="20"></circle>
+            </svg>
+          </div>
+          <h3>🤖 Gemini가 코드를 분석 중입니다</h3>
+          <p class="loading-sub">평균 10~30초 소요됩니다...</p>
+          <div class="loading-bar"><span></span></div>
+        </div>
+
+        <!-- Error state -->
+        <div id="errorState" class="state-error hidden">
+          <div class="state-icon">⚠️</div>
+          <h3>분석 실패</h3>
+          <p id="errorMessage"></p>
+        </div>
+
+        <!-- Result content (6 sections) -->
+        <div id="result" class="result hidden">
+          <!-- 1. Summary -->
+          <div class="card card-summary">
+            <div class="card-head">
+              <span class="card-icon">📋</span>
+              <h3>코드 요약</h3>
+              <span class="card-meta" id="analysisTypeBadge"></span>
+            </div>
+            <p id="summary" class="card-body"></p>
+          </div>
+
+          <!-- 2. Problems -->
+          <div class="card card-problems" id="problemsCard">
+            <div class="card-head">
+              <span class="card-icon">🚨</span>
+              <h3>발견된 문제점</h3>
+              <span class="card-meta" id="problemsCount">0</span>
+            </div>
+            <ul id="problems" class="items"></ul>
+          </div>
+
+          <!-- 3. Improvements -->
+          <div class="card card-improvements" id="improvementsCard">
+            <div class="card-head">
+              <span class="card-icon">💡</span>
+              <h3>개선 제안</h3>
+              <span class="card-meta" id="improvementsCount">0</span>
+            </div>
+            <ul id="improvements" class="items items-plain"></ul>
+          </div>
+
+          <!-- 4. Fixed code -->
+          <div class="card card-code" id="fixedCodeCard">
+            <div class="card-head">
+              <span class="card-icon">✨</span>
+              <h3>수정된 코드</h3>
+              <button id="copyBtn" class="btn btn-ghost btn-sm">
+                <span class="copy-icon">📋</span>
+                <span class="copy-text">복사</span>
+              </button>
+            </div>
+            <div class="code-window">
+              <div class="code-window-head">
+                <span class="code-filename" id="fixedFilename">fixed.py</span>
+              </div>
+              <pre><code id="fixedCode" class="language-python"></code></pre>
+            </div>
+          </div>
+
+          <!-- 5. Performance -->
+          <div class="card card-perf" id="performanceCard">
+            <div class="card-head">
+              <span class="card-icon">⚡</span>
+              <h3>성능 분석</h3>
+              <span class="card-meta">Big-O</span>
+            </div>
+            <div class="perf-grid">
+              <div class="perf-cell perf-before">
+                <span class="perf-label">Before</span>
+                <span class="perf-value" id="perfBefore">—</span>
+              </div>
+              <div class="perf-arrow">→</div>
+              <div class="perf-cell perf-after">
+                <span class="perf-label">After</span>
+                <span class="perf-value" id="perfAfter">—</span>
+              </div>
+            </div>
+            <p id="perfExplanation" class="perf-explanation"></p>
+          </div>
+
+          <!-- 6. Learning points -->
+          <div class="card card-learn" id="learningCard">
+            <div class="card-head">
+              <span class="card-icon">🎓</span>
+              <h3>추가 학습 포인트</h3>
+              <span class="card-meta" id="learningCount">0</span>
+            </div>
+            <ul id="learningPoints" class="learning-list"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="statusbar">
+    <span class="sb-item">⚡ CodeMentor AI</span>
+    <span class="sb-item">Gemini 2.5 Flash</span>
+    <span class="sb-item">Python · Java · JavaScript</span>
+    <span class="sb-item sb-right">© 2026 Portfolio Project</span>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+# ════════════════════════════════════════════════════
+#  🔐 Secrets — 절대 커밋 금지
+# ════════════════════════════════════════════════════
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# API 키, 인증서, 토큰
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.secret
+secrets.json
+credentials.json
+service-account*.json
+gcp-key*.json
+firebase-adminsdk*.json
+
+# ════════════════════════════════════════════════════
+#  🐍 Python
+# ════════════════════════════════════════════════════
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 가상환경
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# 테스트 / 빌드 산출물
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+*.egg-info/
+*.egg
+dist/
+build/
+*.spec
+
+# ════════════════════════════════════════════════════
+#  🟢 Node / 프론트 빌드 (선택)
+# ════════════════════════════════════════════════════
+node_modules/
+.parcel-cache/
+.next/
+.cache/
+
+# ════════════════════════════════════════════════════
+#  💻 IDE / Editor
+# ════════════════════════════════════════════════════
+.vscode/settings.json
+.vscode/.env
+.vscode/*.code-workspace
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+.history/
+.ionide/
+
+# ════════════════════════════════════════════════════
+#  🖥 OS
+# ════════════════════════════════════════════════════
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ════════════════════════════════════════════════════
+#  📋 Logs / Temp / Backup
+# ════════════════════════════════════════════════════
+*.log
+logs/
+tmp/
+temp/
+*.bak
+*.tmp
+*.orig
+*.rej
+
+# ════════════════════════════════════════════════════
+#  🚀 Deploy (Render/Vercel 등은 자체적으로 처리)
+# ════════════════════════════════════════════════════
+.render/
+.vercel/

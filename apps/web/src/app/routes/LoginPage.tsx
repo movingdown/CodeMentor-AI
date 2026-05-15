@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { MadeBy } from "@/components/MadeBy"
 import { login } from "@/features/auth/api"
 import { loginSchema, type LoginInput } from "@/features/auth/schemas"
 import { useAuthStore } from "@/features/auth/store"
@@ -103,6 +104,7 @@ export function LoginPage() {
           </p>
         </CardContent>
       </Card>
+      <MadeBy />
     </div>
   )
 }

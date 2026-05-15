@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { MadeBy } from "@/components/MadeBy"
 import { login, signup } from "@/features/auth/api"
 import { signupSchema, type SignupInput } from "@/features/auth/schemas"
 import { useAuthStore } from "@/features/auth/store"
@@ -114,6 +115,7 @@ export function SignupPage() {
           </p>
         </CardContent>
       </Card>
+      <MadeBy />
     </div>
   )
 }

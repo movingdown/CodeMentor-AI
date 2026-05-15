@@ -1,5 +1,6 @@
 import { ArrowRight, Code2, Github, MessageSquare } from "lucide-react"
 import { Link } from "react-router-dom"
+import { MadeBy } from "@/components/MadeBy"
 import { Button } from "@/components/ui/button"
 
 const FEATURES = [
@@ -64,6 +65,7 @@ export function LandingPage() {
           </div>
         ))}
       </section>
+      <MadeBy />
     </main>
   )
 }

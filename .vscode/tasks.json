@@ -24,6 +24,7 @@
       "label": "Frontend: Vite (5173)",
       "type": "shell",
       "command": "npm",
+      "windows": { "command": "npm.cmd" },
       "args": ["run", "dev"],
       "options": { "cwd": "${workspaceFolder}/apps/web" },
       "isBackground": true,

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import {
   createChat as apiCreateChat,
@@ -51,15 +51,31 @@ export function useStreamChat() {
   const [streamingContent, setStreamingContent] = useState("")
   const [optimisticUser, setOptimisticUser] = useState<string | null>(null)
   const [isStreaming, setIsStreaming] = useState(false)
+  const abortRef = useRef<AbortController | null>(null)
+
+  // 페이지 이탈 시 in-flight 스트림 중단
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort()
+    }
+  }, [])
 
   const send = useCallback(
     async (chatId: string, content: string) => {
+      abortRef.current?.abort()
+      const controller = new AbortController()
+      abortRef.current = controller
+
       setOptimisticUser(content)
       setStreamingContent("")
       setIsStreaming(true)
 
       try {
-        for await (const event of streamMessage(chatId, content)) {
+        for await (const event of streamMessage(
+          chatId,
+          content,
+          controller.signal
+        )) {
           if (event.type === "token") {
             setStreamingContent((prev) => prev + event.text)
           } else if (event.type === "done") {
@@ -70,12 +86,19 @@ export function useStreamChat() {
           }
         }
       } catch (e) {
-        console.error(e)
-        toast.error("스트리밍 연결이 끊겼어요.")
+        if ((e as Error).name === "AbortError") {
+          // 사용자가 페이지를 떠난 경우 — 조용히 무시
+        } else {
+          console.error(e)
+          toast.error("스트리밍 연결이 끊겼어요.")
+        }
       } finally {
         setOptimisticUser(null)
         setStreamingContent("")
         setIsStreaming(false)
+        if (abortRef.current === controller) {
+          abortRef.current = null
+        }
       }
     },
     [qc]

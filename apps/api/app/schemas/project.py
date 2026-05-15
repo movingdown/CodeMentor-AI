@@ -5,7 +5,6 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
-
 ProjectStatus = Literal["pending", "analyzing", "ready", "failed"]
 ProjectSource = Literal["upload", "github"]
 AnalysisType = Literal["summary", "readme", "file_review"]

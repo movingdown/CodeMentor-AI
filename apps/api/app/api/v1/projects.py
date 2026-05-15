@@ -33,7 +33,7 @@ async def get_project(
         ) from exc
     files = await project_service.list_files(db, project_id)
     return ProjectDetailRead(
-        **{k: getattr(project, k) for k in ProjectRead.model_fields},
+        **ProjectRead.model_validate(project).model_dump(),
         files=[ProjectFileMeta.model_validate(f) for f in files],
     )
 

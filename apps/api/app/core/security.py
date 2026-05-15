@@ -1,5 +1,5 @@
 """Password hashing + JWT encode/decode. Pure / stateless."""
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from jose import jwt
@@ -21,7 +21,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 def create_access_token(subject: str, expires_minutes: int | None = None) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expire = now + timedelta(minutes=expires_minutes or settings.jwt_expire_minutes)
     payload: dict[str, Any] = {
         "sub": subject,

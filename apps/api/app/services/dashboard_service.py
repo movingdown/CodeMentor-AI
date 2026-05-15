@@ -6,7 +6,7 @@
   - 단일 트랜잭션(같은 세션)에서 순차 실행.
 """
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,7 +32,7 @@ async def _count(db: AsyncSession, stmt) -> int:
 async def get_dashboard_summary(
     db: AsyncSession, user_id: uuid.UUID
 ) -> DashboardSummary:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     seven_days_ago = (now - timedelta(days=6)).replace(
         hour=0, minute=0, second=0, microsecond=0

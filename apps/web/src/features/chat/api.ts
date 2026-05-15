@@ -32,7 +32,8 @@ export async function deleteChat(id: string): Promise<void> {
  */
 export async function* streamMessage(
   chatId: string,
-  content: string
+  content: string,
+  signal?: AbortSignal
 ): AsyncGenerator<StreamEvent> {
   const token = useAuthStore.getState().token
 
@@ -46,6 +47,7 @@ export async function* streamMessage(
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({ content }),
+      signal,
     }
   )
 

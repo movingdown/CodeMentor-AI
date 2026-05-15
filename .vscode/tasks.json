@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Backend: FastAPI (8000)",
+      "type": "process",
+      "command": "${workspaceFolder}/apps/api/.venv/Scripts/python.exe",
+      "windows": {
+        "command": "${workspaceFolder}\\apps\\api\\.venv\\Scripts\\python.exe"
+      },
+      "linux": { "command": "${workspaceFolder}/apps/api/.venv/bin/python" },
+      "osx": { "command": "${workspaceFolder}/apps/api/.venv/bin/python" },
+      "args": ["-m", "uvicorn", "app.main:app", "--reload", "--port", "8000"],
+      "options": { "cwd": "${workspaceFolder}/apps/api" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "group": "codementor-dev",
+        "panel": "dedicated",
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Frontend: Vite (5173)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "options": { "cwd": "${workspaceFolder}/apps/web" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "group": "codementor-dev",
+        "panel": "dedicated",
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Dev: 전체 실행 (백엔드 + 프론트엔드)",
+      "dependsOn": ["Backend: FastAPI (8000)", "Frontend: Vite (5173)"],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": { "kind": "build", "isDefault": true }
+    }
+  ]
+}

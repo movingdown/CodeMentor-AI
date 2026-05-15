@@ -84,6 +84,18 @@ npm run dev            # 막히면 npm.cmd run dev
 
 브라우저 → http://localhost:5173 (백엔드도 떠 있어야 로그인·AI가 동작)
 
+### 한 번에 실행 (선택)
+
+위 두 서버를 매번 따로 안 띄우고 싶으면:
+
+- **VS Code**: `Ctrl+Shift+B` (또는 Terminal → Run Task → `Dev: 전체 실행`)
+  → 백엔드·프론트가 분할 터미널로 동시 실행 ([.vscode/tasks.json](.vscode/tasks.json) 제공, 별도 설치 불필요)
+- **Windows 탐색기**: 루트의 [start-dev.bat](start-dev.bat) 더블클릭
+  → 두 서버 새 창 + 브라우저 자동 오픈
+
+> 사전 준비(Node 설치, `apps/api/.venv` 생성, `npm install`)가 끝나 있어야 합니다.
+> Windows에서 PowerShell이 `npm`을 막으면 아래 Troubleshooting 참고.
+
 ## Troubleshooting
 
 | 증상 | 원인 / 해결 |

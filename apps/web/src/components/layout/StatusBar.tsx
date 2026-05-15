@@ -31,7 +31,7 @@ export function StatusBar() {
       </div>
       <span className="opacity-40">·</span>
       <span>Gemini 2.5 Flash</span>
-      <span className="ml-auto opacity-60">made by movingdown · v0.1.0 · dev</span>
+      <span className="ml-auto opacity-60">v0.1.0 · dev</span>
     </footer>
   )
 }
